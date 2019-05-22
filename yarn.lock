@@ -4376,6 +4376,11 @@ mkdirp@^0.5.0, mkdirp@^0.5.1:
   dependencies:
     minimist "0.0.8"
 
+moment@2.19.3:
+  version "2.19.3"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.3.tgz#bdb99d270d6d7fda78cc0fbace855e27fe7da69f"
+  integrity sha1-vbmdJw1tf9p4zA+6zoVeJ/59pp8=
+
 moment@^2.24.0:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
@@ -5172,6 +5177,14 @@ react-native-gesture-handler@^1.2.0:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
     prop-types "^15.5.10"
+
+react-native-masked-text@^1.12.3:
+  version "1.12.3"
+  resolved "https://registry.yarnpkg.com/react-native-masked-text/-/react-native-masked-text-1.12.3.tgz#eded3d4382417902d2665b8fda53185cca1d5242"
+  integrity sha512-O46ZPd3dsZsbzJ287uTJQH//ElALaMsqMgr8nZtmhXszWU7O5i09c9sFvD8RbNXTwA48E2CPA03kIi6WewVAYg==
+  dependencies:
+    moment "2.19.3"
+    tinymask "^1.0.2"
 
 react-native-paper@^2.15.2:
   version "2.15.2"
@@ -6260,6 +6273,11 @@ time-stamp@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/time-stamp/-/time-stamp-1.1.0.tgz#764a5a11af50561921b133f3b44e618687e0f5c3"
   integrity sha1-dkpaEa9QVhkhsTPztE5hhofg9cM=
+
+tinymask@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/tinymask/-/tinymask-1.0.2.tgz#df3775a94087b0d3d056c256e8923c01b7ec0941"
+  integrity sha1-3zd1qUCHsNPQVsJW6JI8AbfsCUE=
 
 tmp@^0.0.33:
   version "0.0.33"

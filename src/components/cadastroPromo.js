@@ -1,16 +1,16 @@
 import * as React from 'react';
-import { View, Text,StyleSheet,TouchableOpacity,ScrollView,Dimensions,Image} from 'react-native';
+import { View, Text,StyleSheet,TouchableOpacity,ScrollView,Dimensions,DatePickerAndroid,} from 'react-native';
 import { connect } from 'react-redux';
 import Header from './utils/header'
-import { TextInput } from 'react-native-paper';
+import { TextInput,Snackbar  } from 'react-native-paper';
 import { atualizaPromo } from '../actions/ActionPromo';
 import QRCode from 'react-native-qrcode-svg';
 import { BaseManager } from "../database/index";
 import moment from "moment"
 import {makeid} from "./utils/utilidades"
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
-
+import Icon2 from 'react-native-vector-icons/FontAwesome';
+import { TextInputMask } from 'react-native-masked-text'
 
 
 
@@ -39,17 +39,17 @@ class CadastroPromo extends React.Component {
             this.props.atualizaPromo({campo:'descricao',valor:""})
             this.props.atualizaPromo({campo:'descricao',valor:""})
             this.props.atualizaPromo({campo:'codigo',valor:makeid()})
-            this.props.atualizaPromo({campo:'desconto',valor:""})
+            this.props.atualizaPromo({campo:'desconto',valor:"0"})
             this.props.atualizaPromo({campo:'data',valor:dataAtual})
-            this.props.atualizaPromo({campo:'vencimento',valor:""})
-            this.props.atualizaPromo({campo:'valor',valor:""})
+            this.props.atualizaPromo({campo:'vencimento',valor:dataAtual})
+            this.props.atualizaPromo({campo:'valor',valor:"0,00"})
             this.props.atualizaPromo({campo:'status',valor:"1"})
         }
     }
 
-  
-
-    
+    componentWillReceiveProps(){
+        console.log(this.props.valor)
+    }
 
 
     getTable(id) {
@@ -71,7 +71,7 @@ class CadastroPromo extends React.Component {
         });
     }
 
-    createTable() {
+    /*createTable() {
         this.manager
           .criarTabelaPromocoes()
           .then(val => {
@@ -80,9 +80,9 @@ class CadastroPromo extends React.Component {
           .catch(err => {
             alert("false");
           });
-    }
+    }*/
 
-    removeTabela() {
+    /*removeTabela() {
         this.manager
           .removeTabela()
           .then(val => {
@@ -91,10 +91,22 @@ class CadastroPromo extends React.Component {
           .catch(err => {
             alert("false");
           });
+    }*/
+
+
+    validaCampos(){
+         if(this.props.nome =="")  return false 
+         if(result = this.props.codigo =="" )  return false
+         if(result = this.props.data =="" )  return false
+         if(result = this.props.vencimento =="" )  return false
+         if(result = this.props.desconto =="" )  return false
+         if(result = this.props.valor =="0,00" )  return false  
+         return true
     }
 
 
     salvar() {
+    if(this.validaCampos()){
         if(this.props.status == 1){
             this.manager
             .adicionarPromocao(["'"+this.props.nome+"'",
@@ -134,9 +146,12 @@ class CadastroPromo extends React.Component {
 
 
         }
+    }else{
+        alert("preencha os campos necessarios")
     }
 
 
+    }
 
     excluir() {
         Alert.alert(
@@ -174,6 +189,21 @@ class CadastroPromo extends React.Component {
         })
     }
 
+    async abrirCalendario () {
+        try {
+            const {action, year, month, day} = await DatePickerAndroid.open({
+              date: new Date(),
+            });
+            if (action !== DatePickerAndroid.dismissedAction) {
+                var dataVenc = moment(day +"-"+(month+1)+"-"+year,"DD-MM-YYYY");
+                dataVenc = dataVenc.format("DD-MM-YYYY");
+                this.props.atualizaPromo({campo:'vencimento',valor:dataVenc})
+            }
+          } catch ({code, message}) {
+            console.warn('Cannot open date picker', message);
+          }
+    }
+
     render(){
         
         return(
@@ -186,10 +216,12 @@ class CadastroPromo extends React.Component {
                 <View style={styles.containerCampos}>
                 
                     <TextInput
+                        ref='nome'
                         style={styles.inputs}
                         label='Nome da Promoção'
                         value={this.props.nome}
                         onChangeText={text => this.props.atualizaPromo({campo:'nome',valor:text})}
+                        onSubmitEditing={(event) => { this.refs.descricao.focus() }}
                         mode="flat"
                         theme={{
                             colors: { 
@@ -201,11 +233,14 @@ class CadastroPromo extends React.Component {
                         }}
                     />
                      <TextInput
+                        ref='descricao'
                         style={styles.inputs}
                         label='Descrição'
                         value={this.props.descricao}
                         onChangeText={text => this.props.atualizaPromo({campo:'descricao',valor:text})}
+                        onSubmitEditing={(event) => { this.refs.valor.focus() }}
                         mode="flat"
+                
                         theme={{
                             colors: { 
                                 placeholder: '#171F33',
@@ -218,12 +253,30 @@ class CadastroPromo extends React.Component {
                         
                 <View style={{flexDirection:'row'}}>
                     <TextInput
+                        ref='valor'
                         style={styles.inputs}
                         label='Valor (R$)'
                         value={this.props.valor}
-                        onChangeText={text => this.props.atualizaPromo({campo:'valor',valor:text})}
+                        onSubmitEditing={(event) => { this.refs.desconto.focus() }}
                         mode="flat"
-                        keyboardType='numeric'
+                        render={props =>
+                            <TextInputMask
+                            {...props}
+                            type={'money'}
+                            options={{
+                                precision: 2,
+                                separator: ',',
+                                delimiter: '.',
+                                unit: '',
+                                suffixUnit: ''
+                            }}
+                            value={this.props.valor}
+                            onChangeText={text => {
+                                this.props.atualizaPromo({campo:'valor',valor:text})
+                            
+                            }}
+                          />  
+                        }
                         theme={{
                             colors: { 
                                 placeholder: '#171F33',
@@ -234,22 +287,38 @@ class CadastroPromo extends React.Component {
                         }}
                     />
 
-                    <TextInput
-                    style={styles.inputs}
-                    label='Desconto (%)'
-                    value={this.props.desconto}
-                    onChangeText={text => this.props.atualizaPromo({campo:'desconto',valor:text})}
-                    mode="flat"
-                    keyboardType='numeric'
-                    theme={{
-                        colors: { 
-                            placeholder: '#171F33',
-                            background: 'transparent',
-                            text: '#171F33',
-                            primary: '#171F33' 
-                        }
-                    }}
-                />
+                  
+                        <TextInput
+                            ref='desconto'
+                            style={styles.inputs}
+                            label='Desconto (%)'
+                            value={this.props.desconto}
+                        
+                            mode="flat"
+                            underlineColor = {this.props.desconto > 100 ? '#ed3417':'#171F33'}
+                            render={props =>
+                                <TextInputMask
+                                {...props}
+                                type={'only-numbers'}
+                                value={this.props.desconto}
+                                onChangeText={text => {
+                                    this.props.atualizaPromo({campo:'desconto',valor:text})
+                            
+                                }}
+                              />  
+                            }
+                            theme={{
+                                colors: { 
+                                    placeholder: this.props.desconto > 100 ? '#ed3417':'#171F33',
+                                    background: 'transparent',
+                                    text: '#171F33',
+                                    primary: this.props.desconto > 100 ? '#ed3417':'#171F33' 
+                                }
+                            }}
+                        />
+                   
+                    
+
 
             </View>
 
@@ -276,7 +345,9 @@ class CadastroPromo extends React.Component {
                             label='Vencimento'
                             value={this.props.vencimento}
                             onChangeText={text => this.props.atualizaPromo({campo:'vencimento',valor:text})}
+                            onPress={()=>this.abrirCalendario()}
                             mode="flat"
+                            disabled={true}
                             theme={{
                                 colors: { 
                                     placeholder: '#171F33',
@@ -286,7 +357,11 @@ class CadastroPromo extends React.Component {
                                 }
                             }}
                         />
-
+                        <View style={{flexDirection:'column', justifyContent:'flex-end',marginBottom:23,marginRight:5}}>
+                            <TouchableOpacity onPress={()=>this.abrirCalendario()}>
+                                <Icon2 name={"calendar"} size={30} color="#25203c" />
+                            </TouchableOpacity>
+                        </View>
                        
                     </View>
 
@@ -305,7 +380,7 @@ class CadastroPromo extends React.Component {
                 <View style={{flexDirection:'row' , flex:1, justifyContent:'center',margin:20}}>
 
                     <TouchableOpacity onPress={()=>this.salvar()} style={styles.botao}>
-                        <Icon name={this.props.status == "1"?"save":"edit"} size={40} color="#25203c" />
+                        <Icon2 name={this.props.status == "1"?"save":"edit"} size={40} color="#25203c" />
                     </TouchableOpacity>
 
 

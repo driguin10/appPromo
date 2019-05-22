@@ -13,6 +13,7 @@
     "react-native": "0.59.8",
     "react-native-camera": "^2.7.0",
     "react-native-gesture-handler": "^1.2.0",
+    "react-native-masked-text": "^1.12.3",
     "react-native-paper": "^2.15.2",
     "react-native-qrcode-scanner": "^1.2.1",
     "react-native-qrcode-svg": "^5.1.2",
